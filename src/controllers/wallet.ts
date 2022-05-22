@@ -95,4 +95,4 @@ const getAllWalletTransactions = async (req: Request, res: Response, next: NextF
     }
 };
 
-export default { getUsers: getWalletUsers, createWalletTransaction, getAllWalletTransactions };
+export default { getWalletUsers, createWalletTransaction, getAllWalletTransactions };

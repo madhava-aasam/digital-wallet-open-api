@@ -3,10 +3,10 @@ import controller from '../controllers/wallet';
 
 const walletRouter = express.Router();
 
-walletRouter.get('/users/:userId?', controller.getUsers);
+walletRouter.get('/wallet/users/:userId?', controller.getWalletUsers);
 
-walletRouter.post('/transaction', controller.createWalletTransaction);
+walletRouter.post('/wallet/transaction', controller.createWalletTransaction);
 
-walletRouter.get('/transactions/:userId?', controller.getAllWalletTransactions);
+walletRouter.get('/wallet/transactions/:userId?', controller.getAllWalletTransactions);
 
 export = walletRouter;
