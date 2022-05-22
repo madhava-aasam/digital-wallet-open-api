@@ -26,7 +26,7 @@ const getWalletUsers = async (req: Request, res: Response, next: NextFunction) =
 };
 
 const createWalletTransaction = async (req: Request, res: Response, next: NextFunction) => {
-    let { senderId, recipientId, amount, notes, is_archived } = req.body;
+    let { senderId, recipientId, amount, notes } = req.body;
 
     try {
         const transaction = new Transaction({
@@ -34,8 +34,7 @@ const createWalletTransaction = async (req: Request, res: Response, next: NextFu
             senderId,
             recipientId,
             amount,
-            notes,
-            is_archived
+            notes
         });
 
         const trxn = await transaction.save();
@@ -43,19 +42,20 @@ const createWalletTransaction = async (req: Request, res: Response, next: NextFu
         // update sender account balance
         const sender = await User.findOne({ _id: senderId }).exec();
         if (sender) {
-            const updatedBal = sender.wallet_balance ? sender.wallet_balance - amount : amount;
+            const updatedBal = sender.wallet_balance ? sender.wallet_balance - Number(amount) : Number(amount);
             await User.updateOne({ _id: senderId }, { wallet_balance: updatedBal }, { returnOriginal: true }).exec();
         }
 
         // update recipient account balance
         const recipient = await User.findOne({ _id: recipientId }).exec();
         if (recipient) {
-            const updatedBal = recipient.wallet_balance + amount;
+            const updatedBal = recipient.wallet_balance + Number(amount);
             await User.updateOne({ _id: recipientId }, { wallet_balance: updatedBal }, { returnOriginal: true }).exec();
         }
 
-        const trxnInfo = await Transaction.find({_id: trxn._id}).populate({ path: 'recipientId senderId', select: ['name'] })
-        .select('amount notes');
+        const trxnInfo = await Transaction.find({_id: trxn._id})
+                        .populate({ path: 'recipientId senderId', select: ['name'] })
+                        .select('amount notes');
 
         return res.status(201).json({
             transaction: trxnInfo
@@ -81,7 +81,7 @@ const getAllWalletTransactions = async (req: Request, res: Response, next: NextF
         } else {
             trxns = await Transaction.find()
                 .populate({ path: 'recipientId senderId', select: ['name'] })
-                .select('amount notes createdAt');
+                .select('amount notes created_on');
         }
 
         return res.status(200).json({
@@ -95,4 +95,4 @@ const getAllWalletTransactions = async (req: Request, res: Response, next: NextF
     }
 };
 
-export default { getUsers: getWalletUsers, createWalletTransaction, getAllWalletTransactions };
+export default { getWalletUsers, createWalletTransaction, getAllWalletTransactions };
