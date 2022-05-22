@@ -4,7 +4,7 @@
   "description": "Maintains account balances and transaction between wallets",
   "main": "server.js",
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "tsc",
     "start": "npm run build && node dist/server.js"
   },
   "repository": {
